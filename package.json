@@ -1,0 +1,16 @@
+{
+  "name": "waffle-KAIM-Backend",
+  "version": "1.0.0",
+  "description": "NodeJS 백엔드 서버",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "redis": "^4.6.5",
+    "node-cron": "^3.0.2",
+    "mongoose": "^6.0.0",
+    "dotenv": "^16.0.0"
+  }
+}

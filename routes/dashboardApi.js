@@ -8,6 +8,7 @@ const { getNavInfoData } = require("../utils/navInfoUtils");
 const { getBarGraphData } = require("../utils/barGraphUtils");
 const { getLinearGraphData } = require("../utils/linearGraphUtils");
 const { getComparisonData } = require("../utils/comparisonUtils");
+const { getNationalAverageData } = require("../utils/nationalAverageUtils"); // 추가
 
 /**
  * MongoDB 연결 상태 확인
@@ -82,5 +83,9 @@ router.get(
   createApiHandler("linear-graph", getLinearGraphData)
 );
 router.get("/comparison", createApiHandler("comparison", getComparisonData));
+router.get(
+  "/national-average",
+  createApiHandler("national-average", getNationalAverageData)
+); // 추가
 
 module.exports = router;

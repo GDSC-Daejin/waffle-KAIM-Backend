@@ -6,6 +6,7 @@ const { getNavInfoData } = require("../utils/navInfoUtils");
 const { getBarGraphData } = require("../utils/barGraphUtils");
 const { getLinearGraphData } = require("../utils/linearGraphUtils");
 const { getComparisonData } = require("../utils/comparisonUtils");
+const { getNationalAverageData } = require("../utils/nationalAverageUtils"); // 추가
 
 /**
  * 대시보드 데이터 수집 함수 - 모든 대시보드 API 데이터 수집
@@ -15,14 +16,20 @@ async function collectDashboardData() {
   try {
     console.log("대시보드 데이터 수집 시작");
 
-    // 각 API 데이터 병렬 조회
-    const [navInfoData, barGraphData, linearGraphData, comparisonData] =
-      await Promise.all([
-        getNavInfoData(),
-        getBarGraphData(),
-        getLinearGraphData(),
-        getComparisonData(),
-      ]);
+    // 각 API 데이터 병렬 조회 (national-average 추가)
+    const [
+      navInfoData,
+      barGraphData,
+      linearGraphData,
+      comparisonData,
+      nationalAverageData,
+    ] = await Promise.all([
+      getNavInfoData(),
+      getBarGraphData(),
+      getLinearGraphData(),
+      getComparisonData(),
+      getNationalAverageData(),
+    ]);
 
     console.log("대시보드 데이터 수집 완료");
 
@@ -33,6 +40,7 @@ async function collectDashboardData() {
       "bar-graph": barGraphData,
       "linear-graph": linearGraphData,
       comparison: comparisonData,
+      "national-average": nationalAverageData, // 추가
     };
   } catch (error) {
     console.error("데이터 수집 중 오류 발생:", error);

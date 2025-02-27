@@ -26,8 +26,9 @@ function formatDate(date) {
  * @returns {Date} 해당 분기의 중간 날짜
  */
 function getQuarterMiddleDate(yearQuarter) {
-  const year = parseInt(yearQuarter.substring(0, 4));
-  const quarter = parseInt(yearQuarter.substring(4, 6));
+  const yearQuarterStr = String(yearQuarter);
+  const year = parseInt(yearQuarterStr.substring(0, 4));
+  const quarter = parseInt(yearQuarterStr.substring(4, 6));
 
   // 각 분기의 중간 달(2,5,8,11)의 15일을 반환
   const month = (quarter - 1) * 3 + 2;

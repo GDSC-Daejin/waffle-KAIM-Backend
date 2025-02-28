@@ -5,6 +5,7 @@ const {
   findMostRecentValidCollection,
   getValueFromCollection,
   checkCollectionExists,
+  ensureMongoConnection,
 } = require("./dbUtils");
 
 /**
@@ -13,6 +14,9 @@ const {
  */
 async function getExchangeRateData() {
   debugLog("환율 데이터 조회 시작");
+
+  // MongoDB 연결 확인
+  await ensureMongoConnection();
 
   // 최신 데이터는 어제 데이터
   const latestDate = getLatestDataDate();
@@ -45,6 +49,9 @@ async function getExchangeRateData() {
   }
 
   try {
+    // MongoDB 연결 확인
+    await ensureMongoConnection();
+    
     const latestData = await mongoose.connection.db
       .collection(latestResult.collectionName)
       .findOne({});
@@ -67,6 +74,8 @@ async function getExchangeRateData() {
     return [latestRate, diff];
   } catch (error) {
     debugLog(`환율 데이터 조회 오류: ${error.message}`);
+    // 연결 복구 시도
+    await ensureMongoConnection();
     return [0, 0];
   }
 }
@@ -390,6 +399,9 @@ async function getGdpData() {
  * @returns {Promise<Object>} 네비게이션 정보 데이터 객체
  */
 async function getNavInfoData() {
+  // MongoDB 연결 확인
+  await ensureMongoConnection();
+  
   // 병렬로 모든 데이터 조회
   const [exchangeRate, oilPrice, interestRate, gdp] = await Promise.all([
     getExchangeRateData(),

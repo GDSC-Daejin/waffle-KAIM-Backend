@@ -11,7 +11,7 @@ const {
  */
 async function getLinearGraphData() {
   debugLog("linear-graph 데이터 조회 시작");
-
+ 
   try {
     // 최신 날짜(어제) 기준
     const latestDate = getLatestDataDate();

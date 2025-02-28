@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const mongoose = require("mongoose");
 const { debugLog } = require("../utils/dateUtils");
+const { ensureMongoConnection } = require("../utils/dbUtils");
 
 // API 별 처리 유틸리티 불러오기
 const { getNavInfoData } = require("../utils/navInfoUtils");
@@ -12,10 +13,15 @@ const { getNationalAverageData } = require("../utils/nationalAverageUtils"); // 
 
 /**
  * MongoDB 연결 상태 확인
- * @returns {boolean} 연결 상태 정상 여부
+ * @returns {Promise<boolean>} 연결 상태 정상 여부
  */
-function checkMongoConnection() {
-  return mongoose.connection && mongoose.connection.readyState === 1;
+async function checkMongoConnection() {
+  if (mongoose.connection && mongoose.connection.readyState === 1) {
+    return true;
+  }
+  
+  // 연결이 끊어진 경우 재연결 시도
+  return await ensureMongoConnection();
 }
 
 /**
@@ -29,9 +35,10 @@ function createApiHandler(apiName, dataFetcher) {
     try {
       debugLog(`${apiName} API 요청 시작`);
 
-      // MongoDB 연결 상태 확인
-      if (!checkMongoConnection()) {
-        debugLog("MongoDB 연결 상태 오류");
+      // MongoDB 연결 상태 확인 및 복구 시도
+      const connectionOk = await checkMongoConnection();
+      if (!connectionOk) {
+        debugLog("MongoDB 연결 복구 실패");
         return res.status(500).json({
           error: "DB 연결 실패",
           readyState: mongoose.connection

@@ -13,21 +13,80 @@ function getLatestDataDate() {
 }
 
 /**
+ * MongoDB 연결 상태 확인 및 복구 시도
+ * @returns {Promise<boolean>} 연결 상태
+ */
+async function ensureMongoConnection() {
+  if (mongoose.connection && mongoose.connection.readyState === 1) {
+    return true; // 이미 연결됨
+  }
+  
+  debugLog("MongoDB 연결 상태 확인 중...");
+  
+  // 연결 상태가 아니면 재연결 시도
+  if (mongoose.connection.readyState !== 1) {
+    debugLog("MongoDB 연결 끊김, 재연결 시도");
+    try {
+      // 기존 연결이 있으면 정리
+      if (mongoose.connection.readyState !== 0) {
+        await mongoose.connection.close();
+      }
+      
+      // 연결 재시도
+      await mongoose.connect(process.env.MONGO_URI, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+        serverSelectionTimeoutMS: 10000,
+        socketTimeoutMS: 45000,
+        keepAlive: true,
+        keepAliveInitialDelay: 300000,
+      });
+      
+      debugLog("MongoDB 재연결 성공");
+      return true;
+    } catch (error) {
+      debugLog(`MongoDB 재연결 실패: ${error.message}`);
+      return false;
+    }
+  }
+  
+  return false;
+}
+
+/**
  * 컬렉션 존재 여부 확인
  * @param {string} collectionName - 확인할 컬렉션 이름
  * @returns {Promise<boolean>} 컬렉션 존재 여부
  */
 async function checkCollectionExists(collectionName) {
   try {
+    // 연결 상태 확인
+    await ensureMongoConnection();
+    
+    // 안전한 컬렉션 조회 시도
     const collections = await mongoose.connection.db
-      .listCollections()
+      .listCollections({ name: collectionName })
       .toArray();
-    const exists = collections.some((col) => col.name === collectionName);
+    
+    const exists = collections.length > 0;
     debugLog(`컬렉션 ${collectionName} 존재 여부: ${exists}`);
     return exists;
   } catch (error) {
     debugLog(`컬렉션 확인 오류: ${error.message}`);
-    return false;
+    // 연결 재시도 후 다시 확인
+    try {
+      await ensureMongoConnection();
+      const collections = await mongoose.connection.db
+        .listCollections({ name: collectionName })
+        .toArray();
+      
+      const exists = collections.length > 0;
+      debugLog(`재시도 후 컬렉션 ${collectionName} 존재 여부: ${exists}`);
+      return exists;
+    } catch (retryError) {
+      debugLog(`재시도 후에도 컬렉션 확인 오류: ${retryError.message}`);
+      return false;
+    }
   }
 }
 
@@ -46,6 +105,9 @@ async function findMostRecentValidCollection(startDate) {
 
     if (await checkCollectionExists(collectionName)) {
       try {
+        // 연결 상태 확인
+        await ensureMongoConnection();
+        
         const doc = await mongoose.connection.db
           .collection(collectionName)
           .findOne({});
@@ -74,6 +136,9 @@ async function findMostRecentValidCollection(startDate) {
  */
 async function getValueFromCollection(collectionName, fieldName) {
   try {
+    // 연결 상태 확인
+    await ensureMongoConnection();
+    
     const data = await mongoose.connection.db
       .collection(collectionName)
       .findOne({});
@@ -89,4 +154,5 @@ module.exports = {
   checkCollectionExists,
   findMostRecentValidCollection,
   getValueFromCollection,
+  ensureMongoConnection,
 };

@@ -11,6 +11,7 @@ const {
  */
 async function getNationalAverageData() {
   debugLog("national-average 데이터 조회 시작");
+  
 
   try {
     // 최신 날짜(어제) 기준

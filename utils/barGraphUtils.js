@@ -24,6 +24,7 @@ const regionMapping = {
  */
 async function getBarGraphData() {
   debugLog("bar-graph 데이터 조회 시작");
+  
 
   // 최신 데이터는 어제 데이터
   const latestDate = getLatestDataDate();

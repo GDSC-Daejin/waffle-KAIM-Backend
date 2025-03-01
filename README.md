@@ -40,7 +40,7 @@ node scripts/insertPredictData.js
 
 #### (/dashboard-api/bar-graph) 완
 
-#### (/dashboard-api/linear-graph) 미완
+#### (/dashboard-api/linear-graph) 완
 
 #### (/dashboard-api/comparison) 완
 

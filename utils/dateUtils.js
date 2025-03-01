@@ -50,9 +50,31 @@ function debugLog(message, data = null) {
   }
 }
 
+/**
+ * 배열에서 숫자 문자열을 숫자로 변환
+ * @param {Array<string>} arr - 숫자 문자열 배열
+ * @returns {Array<number>} 숫자 배열
+ */
+function parseNumberArray(arr) {
+  if (!Array.isArray(arr) || arr.length === 0) return [0];
+  // 첫 번째 요소만 처리 (전국 평균)
+  return [parseFloat(arr[0] || 0)];
+}
+
+/**
+ * 계산된 값을 소수점 2자리로 반올림
+ * @param {number} value - 반올림할 값
+ * @returns {number} 소수점 2자리로 반올림된 값
+ */
+function roundToTwoDecimals(value) {
+  return Math.round(value * 100) / 100;
+}
+
 module.exports = {
   getKoreanNow,
   formatDate,
   getQuarterMiddleDate,
   debugLog,
+  parseNumberArray,
+  roundToTwoDecimals,
 };

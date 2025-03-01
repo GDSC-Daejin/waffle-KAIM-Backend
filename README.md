@@ -11,6 +11,11 @@ JJ-IM이 제작하고 있는 KAIM 백엔드 입니다
 node scripts/printDates.js
 ```
 
+예측 더미 데이터 생성기
+```bash
+node scripts/insertPredictData.js
+```
+
 백엔드 서버 기능은 아직 제작중입니다
 
 ## 대쉬보드 부분 API 작업할 내용

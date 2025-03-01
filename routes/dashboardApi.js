@@ -70,7 +70,7 @@ function createApiHandler(apiName, dataFetcher) {
 
       // Redis에 캐싱 (ENABLE_REDIS가 1인 경우)
       if (process.env.ENABLE_REDIS === "1") {
-        await redisClient.set(cacheKey, JSON.stringify(data), { EX: 3600 }); // 1시간 캐싱
+        await redisClient.set(cacheKey, JSON.stringify(data), { EX: 43200 }); // 12시간 캐싱 (3600 → 43200)
         debugLog("Redis에 데이터 캐싱 완료");
       }
 

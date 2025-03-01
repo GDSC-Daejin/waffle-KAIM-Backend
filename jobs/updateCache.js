@@ -62,7 +62,7 @@ const task = cron.schedule(
       // Redis에 저장
       for (const key in dataForKeys) {
         await redisClient.set(key, JSON.stringify(dataForKeys[key]), {
-          EX: 3600, // 1시간 캐싱
+          EX: 43200, // 12시간 캐싱 (3600 → 43200)
         });
       }
       console.log("캐시 업데이트 완료");
